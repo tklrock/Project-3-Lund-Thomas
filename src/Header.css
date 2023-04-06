@@ -1,0 +1,14 @@
+#header {
+    text-align: center;
+    background-color: #3f2000;
+    color: white;
+    padding-top: 0.6em;
+}
+
+#header .title {
+    font-weight: 700;
+}
+
+#header .subtitle {
+    font-size: 80%;
+}

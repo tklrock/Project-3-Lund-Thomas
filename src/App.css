@@ -1,0 +1,28 @@
+#app {
+    display: grid;
+    grid-template-columns: 30% auto;
+    grid-template-rows: 3.5em auto;
+    grid-template-areas:
+        'header header'
+        'nav-panel map';
+    height: 100vh;
+}
+
+#header {
+    grid-area: header;
+    text-align: center;
+}
+
+#nav-panel {
+    grid-area: nav-panel;
+    position: relative;
+}
+
+#nav-contents1,
+#nav-content2 {
+    position: absolute;
+}
+
+#map {
+    grid-area: map;
+}
