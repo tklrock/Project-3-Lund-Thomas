@@ -9,31 +9,30 @@ import ChapterComponent from './ChapterComponent';
 import VolumeComponent from './VolumeComponent';
 import VolumesList from './VolumesList';
 import { createHashRouter, RouterProvider } from 'react-router-dom';
-import { loadChapterData, useFetchScripturesData } from './ServerApi';
-import { useMemo } from 'react';
+import { useFetchScripturesData } from './MapScripApi';
+import { useMemo, useState } from 'react';
 
 function App() {
     const scripturesData = useFetchScripturesData();
+    const [markers, setMarkers] = useState([]);
+
 
     const router = useMemo(() => createHashRouter([
         {
             path: "/",
-            element: <MainPage />,
+            element: <MainPage markers={markers}/>,
             errorElement: <ErrorPage />,
             children: [
                 {
                     path: ":volume/:book/:chapter/:animation?",
-                    element: <ChapterComponent />,
-                    loader: async ({ params }) => {
-                        return await loadChapterData(params, scripturesData.books); 
-                    }
+                    element: <ChapterComponent setMarkers={setMarkers} />,
                 },
-                { path: ":volume/:book", element: <BookComponent /> },
-                { path: ":volume", element: <VolumeComponent /> },
-                { path: "", element: <VolumesList /> }
+                { path: ":volume/:book", element: <BookComponent setMarkers={setMarkers} /> },
+                { path: ":volume", element: <VolumeComponent setMarkers={setMarkers} /> },
+                { path: "", element: <VolumesList setMarkers={setMarkers} /> }
             ]
         }
-    ]), [scripturesData.books]);
+    ]), [markers, setMarkers]);
 
     if (scripturesData.isLoading) {
         return <LoadingIndicator />;

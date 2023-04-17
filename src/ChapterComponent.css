@@ -1,0 +1,122 @@
+#nav-panel {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+#nav-contents1,
+#nav-contents2 {
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+.scripturewrapper {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 12pt;
+    font-weight: normal;
+    background-color: white;
+}
+
+.scripturecontent {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 12pt;
+    font-weight: normal;
+    background-color: white;
+}
+
+div.chapterheading {
+    font-size: 14pt;
+    font-weight: bold;
+    padding: .5em;
+    text-align: center;
+}
+
+div.chapterheading b.big {
+    font-size: 140%;
+}
+
+div.navheading {
+    font-size: 13pt;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    min-height: fit-content;
+    height: 50px;
+}
+
+#nav-panel ul.versesblock {
+    margin: 0;
+    line-height: auto;
+    list-style: none;
+    padding: 1em;
+    padding-left: 1.5em;
+    padding-right: 1.5em;
+    font-size: 13pt
+}
+
+ul.versesblock li {
+    position: relative;
+    display: block;
+    margin-bottom: .3em;
+}
+
+ul.versesblock li.sectionHeader {
+    font-style: italic;
+}
+
+span.verse {
+    padding-left: .4em;
+    padding-right: .3em;
+}
+
+.scripturecontent li a:link, .scripturecontent li a:visited, .scripturecontent li a:active {
+    color: #44b;
+    text-decoration: none;
+}
+
+.scripturecontent li a:hover {
+    color: #4488ff;
+    text-decoration: underline;
+}
+
+.navheading a:link, .navheading a:visited, .navheading a:active {
+    color: #222;
+    text-decoration: none;
+}
+
+.navheading a:hover {
+    color: #4488ff;
+    text-decoration: underline;
+}
+
+.navheading .nextprev {
+    position: absolute;
+    right: 1em;
+}
+
+li.match {
+    background-color: #ffffcc;
+}
+
+.maplabel {
+    font-size: 12pt;
+    font-weight: 400;
+    color: #201000;
+    text-shadow: -1px -1px 0 #fff8f0, 1px -1px 0 #fff8f0, -1px 1px 0 #fff8f0, 1px 1px 0 #fff8f0,;
+    max-width: 15rem;
+}
+
+div.icon {
+    display: inline-block;
+}
+
+div.icon svg {
+    height: 0.9rem;
+    margin: 0.4rem;
+}
+
+div.icon svg:hover {
+    fill: #48f
+}

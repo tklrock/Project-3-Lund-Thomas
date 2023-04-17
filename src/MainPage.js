@@ -1,15 +1,18 @@
-import { Header } from "./Header";
+import Header from "./Header";
 import Map from "./Map";
 import ScripturesNavigator from "./ScripturesNavigator";
+import { memo } from 'react';
 
-export default function MainPage() {
+function MainPage({ markers }) {
     return (
         <div id="app">
             <Header />
             <ScripturesNavigator />
             <aside id="map" >
-                <Map />
+                <Map markers={markers}/>
             </aside>
         </div> 
     );
 }
+
+export default memo(MainPage);

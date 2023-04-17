@@ -1,260 +1,278 @@
-/*------------------------------------------------------------------------
- *                      CONSTANTS
- */
-// By using <svg> elements for these two icons, I can avoid using the full
+// /*------------------------------------------------------------------------
+//  *                      CONSTANTS
+//  */
+// import { useContext, useEffect, useState } from "react";
+// import ScripturesData from "./ScripturesData";
+// import { geoplacesForHtml } from "./MapHelper";
+// import { LRUCache } from "lru-cache";
 
-import { useEffect, useState } from "react";
+// const BOOK_PROPERTIES = ["backName", "citeAbbr", "citeFull", "fullName", "gridName", "subdiv", "tocName", "webTitle"];
 
-// Materialize CSS and loading icon fonts.
+// // By using <svg> elements for these two icons, I can avoid using the full
+// // Materialize CSS and loading icon fonts.
 
-const BOOK_PROPERTIES = ["backName", "citeAbbr", "citeFull", "fullName", "gridName", "subdiv", "tocName", "webTitle"];
+// const ICON_NEXT = `
+//     <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 183.9 188.7">
+//         <polygon points="128.3,94.3 7.3,7.3 7.3,181.3"/>
+//         <rect x="150.6" y="7.3" width="26" height="174"/>
+//     </svg>`;
+// const ICON_PREVIOUS = `
+//     <svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 183.9 188.7">
+//         <polygon points="55.6,94.3 176.6,181.3 176.6,7.3"/>
+//         <rect x="7.3" y="7.3" transform="matrix(-1 -8.979541e-11 8.979541e-11 -1 40.6273 188.6942)" width="26" height="174"/>
+//     </svg>`;
 
-const ICON_NEXT = `
-    <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 183.9 188.7">
-        <polygon points="128.3,94.3 7.3,7.3 7.3,181.3"/>
-        <rect x="150.6" y="7.3" width="26" height="174"/>
-    </svg>`;
-const ICON_PREVIOUS = `
-    <svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 183.9 188.7">
-        <polygon points="55.6,94.3 176.6,181.3 176.6,7.3"/>
-        <rect x="7.3" y="7.3" transform="matrix(-1 -8.979541e-11 8.979541e-11 -1 40.6273 188.6942)" width="26" height="174"/>
-    </svg>`;
+// const URL_BASE = "https://scriptures.byu.edu/";
+// const URL_BOOKS = `${URL_BASE}mapscrip/model/books.php`;
+// const URL_LINK_PREFIX = "/#/";
+// const URL_SCRIPTURES = `${URL_BASE}mapscrip/mapgetscrip.php`;
+// const URL_VOLUMES = `${URL_BASE}mapscrip/model/volumes.php`;
 
-const URL_BASE = "https://scriptures.byu.edu/";
-const URL_BOOKS = `${URL_BASE}mapscrip/model/books.php`;
-const URL_LINK_PREFIX = "/#/";
-const URL_SCRIPTURES = `${URL_BASE}mapscrip/mapgetscrip.php`;
-const URL_VOLUMES = `${URL_BASE}mapscrip/model/volumes.php`;
+// /*------------------------------------------------------------------------
+//  *                      PRIVATE HELPERS
+//  */
 
-/*------------------------------------------------------------------------
- *                      PRIVATE HELPERS
- */
-const encodedScriptureUrlParameters = function (bookId, chapter, verses, isJst) {
-    if (bookId !== undefined && chapter !== undefined) {
-        let options = "";
+// const chapterCache = new LRUCache({max: 25 });
 
-        if (verses !== undefined) {
-            options += verses;
-        }
+// const encodedScriptureUrlParameters = function (bookId, chapter, verses, isJst) {
+//     if (bookId !== undefined && chapter !== undefined) {
+//         let options = "";
 
-        if (isJst !== undefined) {
-            options += "&jst=JST";
-        }
+//         if (verses !== undefined) {
+//             options += verses;
+//         }
 
-        return `${URL_SCRIPTURES}?book=${bookId}&chap=${chapter}&verses${options}`;
-    }
-};
+//         if (isJst !== undefined) {
+//             options += "&jst=JST";
+//         }
 
-const injectNextPrevious = function (html, nextPrevious) {
-    return html.replaceAll(
-        /(<div class="navheading">)(<div class="divtitle">[^<]*<\/div>)?(<\/div>)/g,
-        (match) => {
-            const prefix = match.slice(0, match.length - 6);
-            const suffix = match.slice(-6);
+//         return `${URL_SCRIPTURES}?book=${bookId}&chap=${chapter}&verses${options}`;
+//     }
+// };
 
-            return `${prefix}<div class="nextprev">${nextPrevious}</div>${suffix}`;
-        }
-    );
-};
+// const injectNextPrevious = function (html, nextPrevious) {
+//     return html.replaceAll(
+//         /(<div class="navheading">)(<div class="divtitle">[^<]*<\/div>)?(<\/div>)/g,
+//         (match) => {
+//             const prefix = match.slice(0, match.length - 6);
+//             const suffix = match.slice(-6);
 
-const nextChapter = function (bookId, chapterValue, books) {
-    let book = books[bookId];
-    let chapter = Number(chapterValue);
+//             return `${prefix}<div class="nextprev">${nextPrevious}</div>${suffix}`;
+//         }
+//     );
+// };
 
-    if (book !== undefined) {
-        if (chapter < book.numChapters) {
-            return [
-                `${URL_LINK_PREFIX}${book.parentBookId}/${bookId}/${chapter + 1}`,
-                titleForBookChapter(book, chapter + 1)
-            ];
-        }
+// const nextChapter = function (bookId, chapterValue, books) {
+//     let book = books[bookId];
+//     let chapter = Number(chapterValue);
 
-        let nextBook = books[bookId + 1];
+//     if (book !== undefined) {
+//         if (chapter < book.numChapters) {
+//             return [
+//                 `${URL_LINK_PREFIX}${book.parentBookId}/${bookId}/${chapter + 1}`,
+//                 titleForBookChapter(book, chapter + 1)
+//             ];
+//         }
 
-        if (nextBook !== undefined) {
-            let nextChapterValue = 0;
+//         let nextBook = books[bookId + 1];
 
-            if (nextBook.numChapters > 0) {
-                nextChapterValue = 1;
-            }
+//         if (nextBook !== undefined) {
+//             let nextChapterValue = 0;
 
-            return [
-                `${URL_LINK_PREFIX}${nextBook.parentBookId}/${nextBook.id}/${nextChapterValue}`,
-                titleForBookChapter(nextBook, nextChapterValue)
-            ];
-        }
-    }
+//             if (nextBook.numChapters > 0) {
+//                 nextChapterValue = 1;
+//             }
 
-    return null;
-}
+//             return [
+//                 `${URL_LINK_PREFIX}${nextBook.parentBookId}/${nextBook.id}/${nextChapterValue}`,
+//                 titleForBookChapter(nextBook, nextChapterValue)
+//             ];
+//         }
+//     }
 
-const previousChapter = function (bookId, chapterValue, books) {
-    const book = books[bookId];
-    const chapter = Number(chapterValue);
+//     return null;
+// }
 
-    if (book !== undefined) {
-        if (chapter > 1) {
-            return [
-                `${URL_LINK_PREFIX}${book.parentBookId}/${bookId}/${chapter - 1}`,
-                titleForBookChapter(book, chapter - 1)
-            ];
-        }
+// const previousChapter = function (bookId, chapterValue, books) {
+//     const book = books[bookId];
+//     const chapter = Number(chapterValue);
 
-        const previousBook = books[bookId - 1];
+//     if (book !== undefined) {
+//         if (chapter > 1) {
+//             return [
+//                 `${URL_LINK_PREFIX}${book.parentBookId}/${bookId}/${chapter - 1}`,
+//                 titleForBookChapter(book, chapter - 1)
+//             ];
+//         }
 
-        if (previousBook !== undefined) {
-            return [
-                `${URL_LINK_PREFIX}${previousBook.parentBookId}/${previousBook.id}/${previousBook.numChapters}`,
-                titleForBookChapter(previousBook, previousBook.numChapters)
-            ];
-        }
-    }
+//         const previousBook = books[bookId - 1];
 
-    return null;
-}
+//         if (previousBook !== undefined) {
+//             return [
+//                 `${URL_LINK_PREFIX}${previousBook.parentBookId}/${previousBook.id}/${previousBook.numChapters}`,
+//                 titleForBookChapter(previousBook, previousBook.numChapters)
+//             ];
+//         }
+//     }
 
-const nextPreviousLink = function (nextPrev, icon) {
-    return `<a href="${nextPrev[0]}" title="${nextPrev[1]}"><div class="icon waves-effect">${icon}</div></a>`;
-}
+//     return null;
+// }
 
-const nextPreviousMarkup = function (next, previous) {
-    let markup = "";
+// const nextPreviousLink = function (nextPrev, icon) {
+//     return `<a href="${nextPrev[0]}" title="${nextPrev[1]}"><div class="icon waves-effect">${icon}</div></a>`;
+// }
 
-    if (previous) {
-        markup = nextPreviousLink(previous, ICON_PREVIOUS);
-    }
+// const nextPreviousMarkup = function (next, previous) {
+//     let markup = "";
 
-    if (next) {
-        markup += nextPreviousLink(next, ICON_NEXT);
-    }
+//     if (previous) {
+//         markup = nextPreviousLink(previous, ICON_PREVIOUS);
+//     }
 
-    return markup;
-};
+//     if (next) {
+//         markup += nextPreviousLink(next, ICON_NEXT);
+//     }
 
-const replaceHTMLEntities = function(book) {
-    BOOK_PROPERTIES.forEach((property) => {
-        book[property] = book[property].replaceAll("$mdash;", "—");
-    });
-};
+//     return markup;
+// };
 
-const titleForBookChapter = function (book, chapter) {
-    if (chapter > 0) {
-        return `${book.tocName} ${chapter}`;
-    }
+// const replaceHTMLEntities = function(book) {
+//     BOOK_PROPERTIES.forEach((property) => {
+//         book[property] = book[property].replaceAll("&mdash;", "—");
+//     });
+// };
 
-    return book.tocName;
-};
+// const titleForBookChapter = function (book, chapter) {
+//     if (chapter > 0) {
+//         return `${book.tocName} ${chapter}`;
+//     }
 
-/*------------------------------------------------------------------------
- *                      PUBLIC METHODS
- */
-async function loadChapterData(params, books, setMarkers) {
-    if (!books) {
-        return null;
-    }
+//     return book.tocName;
+// };
 
-    const book = books[params.book];
-    const url = encodedScriptureUrlParameters(book.id, Number(params.chapter), "", "");
+// /*------------------------------------------------------------------------
+//  *                      PUBLIC METHODS
+//  */
 
-    let content = "";
+// function useFetchChapterData(book, chapter) {
+//     const { books } = useContext(ScripturesData);
+//     const [chapterHtml, setChapterHtml] = useState("");
+//     const [chapterMarkers, setChapterMarkers] = useState([]);
+//     useEffect(() => {
+//         if (!book) {
+//             return;
+//         }
+//         const url = encodedScriptureUrlParameters(book.id, Number(chapter));
+//         const key = `${book.id}|${chapter}`;
+//         let cachedValue = chapterCache.get(key);
+//         let mounted = true;
+//         if (!cachedValue) {
+//             fetch(url)
+//                 .then(response => response.text())
+//                 .then(chapterText => {
+//                     if (mounted) {
+//                         const html = injectNextPrevious(
+//                             chapterText,
+//                             nextPreviousMarkup(
+//                                 nextChapter(book.id, chapter, books),
+//                                 previousChapter(book.id, chapter, books)
+//                             )
+//                         );
+//                         const markers = geoplacesForHtml(html, `${key}|`);
+//                         setChapterMarkers(markers);
+//                         setChapterHtml(html);
+//                         chapterCache.set(key, { html, markers });
+//                     }
+//                 });
+//         } else {
+//             setChapterHtml(cachedValue.html);
+//             setChapterMarkers(cachedValue.markers);
+//         }
+//         return () => { mounted = false; };
+//     }, [book, books, chapter]);
+//     return { html: chapterHtml, markers: chapterMarkers };
+// }
 
-    await fetch(url)
-        .then(response => response.text())
-        .then(chapterText => {
-            content = injectNextPrevious(
-                chapterText,
-                nextPreviousMarkup(
-                    nextChapter(book.id, params.chapter, books),
-                    previousChapter(book.id, params.chapter, books)
-                )
-            );
 
-            // NEEDSWORK: deal with markers
-            // setMarkers(extractMarkers(content));
-        });
+// async function loadScripturesData() {
+//     let books;
+//     let volumes;
 
-    return content;
-}
+//     const cacheBooks = function ([booksJson, volumesJson]) {
+//         volumesJson.forEach((volume) => {
+//             let books = [];
+//             let bookId = volume.minBookId;
 
-async function loadScripturesData() {
-    let books;
-    let volumes;
+//             while (bookId <= volume.maxBookId) {
+//                 books.push(booksJson[bookId]);
+//                 bookId += 1;
+//             }
 
-    const cacheBooks = function ([booksJson, volumesJson]) {
-        volumesJson.forEach((volume) => {
-            let books = [];
-            let bookId = volume.minBookId;
+//             volume.books = books;
+//         });
 
-            while (bookId <= volume.maxBookId) {
-                books.push(booksJson[bookId]);
-                bookId += 1;
-            }
+//         volumes = volumesJson;
+//         books = booksJson;
+//     };
 
-            volume.books = books;
-        });
+//     await Promise.all([URL_BOOKS, URL_VOLUMES].map(url =>
+//         fetch(url).then(response => response.json())
+//     )).then(jsonResults => {
+//         cacheBooks(jsonResults);
+//     });
 
-        volumes = volumesJson;
-        books = booksJson;
-    };
+//     return { volumes, books };
+// }
 
-    await Promise.all([URL_BOOKS, URL_VOLUMES].map(url =>
-        fetch(url).then(response => response.json())
-    )).then(jsonResults => {
-        cacheBooks(jsonResults);
-    });
+// function useFetchScripturesData() {
+//     const [books, setBooks] = useState([]);
+//     const [volumes, setVolumes] = useState({});
+//     const [isLoading, setIsLoading] = useState(true);
 
-    return { volumes, books };
-}
+//     useEffect(() => {
+//         const cacheBooks = function ([booksJson, volumesJson]) {
+//             volumesJson.forEach((volume) => {
+//                 let books = [];
+//                 let bookId = volume.minBookId;
 
-function useFetchScripturesData() {
-    const [books, setBooks] = useState([]);
-    const [volumes, setVolumes] = useState({});
-    const [isLoading, setIsLoading] = useState(true);
+//                 while (bookId <= volume.maxBookId) 
+//                 {
+//                     const book = booksJson[bookId];
+//                     replaceHTMLEntities(book);    
+//                     books.push(book);
+//                     bookId += 1;
+//                 }
 
-    useEffect(() => {
-        const cacheBooks = function ([booksJson, volumesJson]) {
-            volumesJson.forEach((volume) => {
-                let books = [];
-                let bookId = volume.minBookId;
+//                 volume.books = books;
+//             });
 
-                while (bookId <= volume.maxBookId) 
-                {
-                    const book = booksJson[bookId];
-                    replaceHTMLEntities(book);    
-                    books.push(book);
-                    bookId += 1;
-                }
+//             setVolumes(volumesJson);
+//             setBooks(booksJson);
+//             setIsLoading(false);
+//         };
 
-                volume.books = books;
-            });
+//         let mounted = true;
 
-            setVolumes(volumesJson);
-            setBooks(booksJson);
-            setIsLoading(false);
-        };
+//         Promise.all([URL_BOOKS, URL_VOLUMES].map(url =>
+//             fetch(url).then(response => response.json())
+//         )).then(jsonResults => {
+//             if (mounted) {
+//                 cacheBooks(jsonResults);
+//             }
+//         });
 
-        let mounted = true;
+//         return () => { mounted = false; };
+//     }, []);
 
-        Promise.all([URL_BOOKS, URL_VOLUMES].map(url =>
-            fetch(url).then(response => response.json())
-        )).then(jsonResults => {
-            if (mounted) {
-                cacheBooks(jsonResults);
-            }
-        });
+//     return { volumes, books, isLoading };
+// }
 
-        return () => { mounted = false; };
-    }, []);
-
-    return { volumes, books, isLoading };
-}
-
-/*------------------------------------------------------------------------
- *                      EXPORTS
- */
-export {
-    loadChapterData,
-    loadScripturesData,
-    useFetchScripturesData,
-    URL_LINK_PREFIX,
-};
+// /*------------------------------------------------------------------------
+//  *                      EXPORTS
+//  */
+// export {
+//     useFetchChapterData,
+//     loadScripturesData,
+//     useFetchScripturesData,
+//     URL_LINK_PREFIX,
+// };

@@ -8,48 +8,68 @@
 /*------------------------------------------------------------------------
  *                      IMPORTS
  */
-import Html from "./HtmlHelper.js";
+import { useParams } from "react-router-dom";
+import { useContext } from "react";
+import ScripturesData from "./ScripturesData.js";
 
 /*------------------------------------------------------------------------
  *                      CONSTANTS
  */
-const DIV_BREADCRUMBS = "crumbs";
-const TAG_UNORDERED_LIST = "ul";
 const TEXT_TOP_LEVEL = "The Scriptures";
 
 /*------------------------------------------------------------------------
  *                      EXPORTED FUNCTIONS
  */
-const injectBreadcrumbs = function (volume, book, chapter) {
-    let crumbs = "";
+
+function Crumb(text, href) {
+    let content = "";
+
+    if(href){
+        content = (<a href={href} key={`ak${text}`}>{text}</a>);
+    } else {
+        content = text;
+    }
+
+    return  (
+        <li key={`ck${text}`}>{content}</li>
+    );
+}
+
+const Breadcrumbs = function () {
+    const {volumes, books } = useContext(ScripturesData);
+    const {volume, book, chapter } = useParams();
+    let crumbs = [];
+    const volumeObject = volumes[volume - 1];
+    const bookObject = books[book];
 
     if (volume === undefined) {
-        crumbs = Html.listItem(TEXT_TOP_LEVEL);
+        crumbs.push(Crumb(TEXT_TOP_LEVEL));
     } else {
-        crumbs = Html.listItemLink(TEXT_TOP_LEVEL);
+        crumbs.push(Crumb(TEXT_TOP_LEVEL, "#/"));
 
         if (book === undefined) {
-            crumbs += Html.listItem(volume.fullName);
+            crumbs.push(Crumb(volumeObject.fullName));
         } else {
-            crumbs += Html.listItemLink(volume.fullName, volume.id);
+            crumbs.push(Crumb(volumeObject.fullName, `#/${volumeObject.id}`));
 
             if (chapter === undefined || chapter <= 0) {
-                crumbs += Html.listItem(book.tocName);
+                crumbs.push(Crumb(bookObject.tocName));
             } else {
-                crumbs += Html.listItemLink(
-                    book.tocName,
-                    `${volume.id}:${book.id}`
-                );
-                crumbs += Html.listItem(chapter);
+                crumbs.push(Crumb(
+                    bookObject.tocName,
+                    `#/${volumeObject.id}/${bookObject.id}`
+                ));
+                crumbs.push(Crumb(chapter));
             }
         }
     }
 
-    document.getElementById(DIV_BREADCRUMBS).innerHTML
-        = Html.element(TAG_UNORDERED_LIST, crumbs);
-};
+    return (
+        <div id="crumbs">{crumbs}</div>
+    );
+}
 
 /*------------------------------------------------------------------------
  *                      EXPORTS
  */
-export { injectBreadcrumbs };
+export default Breadcrumbs;

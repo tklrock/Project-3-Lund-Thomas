@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import ScripturesData from './ScripturesData';
-import { URL_LINK_PREFIX } from './ServerApi';
+import { URL_LINK_PREFIX } from './MapScripApi';
 import './VolumeComponent.css';
 
 export default function VolumeComponent(props) {
@@ -18,7 +18,7 @@ export default function VolumeComponent(props) {
     }, [props]);
 
     if (!volume || (incomingVolumeId && Number(incomingVolumeId) !== volume.id)) {
-        setVolume(volumes[Number(incomingVolumeId) -1]);
+        setVolume(volumes[Number(incomingVolumeId) - 1]);
 
         return null;
     }

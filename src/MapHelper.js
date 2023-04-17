@@ -9,64 +9,35 @@
  *                      CONSTANTS
  */
 const INDEX_FLAG = 11;
+const INDEX_ID = 1;
 const INDEX_LATITUDE = 3;
 const INDEX_LONGITUDE = 4;
 const INDEX_PLACENAME = 2;
-const LAT_LON_PARSER = /\((.*),'(.*)',(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),'(.*)'\)/;
+const INDEX_VIEW_ALTITUDE = 9;
+const LAT_LON_PARSER = /.*\((.*),'(.*)',(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),'(.*)'\).*/;
 const MAX_ZOOM_LEVEL = 18;
 const MIN_ZOOM_LEVEL = 6;
 const ZOOM_RATIO = 450;
 
 /*------------------------------------------------------------------------
- *                      VARIABLES
- */
-let geoplaces = [];
-let gmMarkers = [];
-
-/*------------------------------------------------------------------------
  *                      PRIVATE HELPERS
  */
-const addGeoplace = function (placename, latitude, longitude) {
-    let index = geoplaceIndex(latitude, longitude);
+const addGeoplace = function (geoplaces, id, placename, latitude, longitude, viewAltitude) {
+    let index = geoplaceIndex(geoplaces, latitude, longitude);
 
     if (index >= 0) {
-        mergePlacename(placename, index);
+        mergePlacename(geoplaces, id, placename, index);
     } else {
         geoplaces.push({
-            latitude,
-            longitude,
-            placename
+            id,
+            position: { lat: latitude, lng: longitude },
+            placename,
+            viewAltitude
         });
     }
 };
 
-const addMarkers = function () {
-    geoplaces.forEach(function (geoplace) {
-        const marker = new markerWithLabel.MarkerWithLabel({
-            animation: google.maps.Animation.DROP,
-            clickable: false,
-            draggable: false,
-            labelAnchor: new google.maps.Point(0, -3),
-            labelClass: "maplabel",
-            labelContent: geoplace.placename,
-            map,
-            position: { lat: Number(geoplace.latitude), lng: Number(geoplace.longitude) }
-        });
-
-        gmMarkers.push(marker);
-    });
-};
-
-const clearMarkers = function () {
-    gmMarkers.forEach(function (marker) {
-        marker.setMap(null);
-    });
-
-    gmMarkers = [];
-    geoplaces = [];
-};
-
-const geoplaceIndex = function (latitude, longitude) {
+const geoplaceIndex = function (geoplaces, latitude, longitude) {
     let i = geoplaces.length - 1;
 
     while (i >= 0) {
@@ -74,8 +45,8 @@ const geoplaceIndex = function (latitude, longitude) {
 
         // Note: here is the safe way to compare IEEE floating-point
         // numbers: compare their difference to a small number
-        const latitudeDelta = Math.abs(geoplace.latitude - latitude);
-        const longitudeDelta = Math.abs(geoplace.longitude - longitude);
+        const latitudeDelta = Math.abs(geoplace.position.lat - latitude);
+        const longitudeDelta = Math.abs(geoplace.position.lng - longitude);
 
         if (latitudeDelta < 0.00000001 && longitudeDelta < 0.00000001) {
             return i;
@@ -87,12 +58,44 @@ const geoplaceIndex = function (latitude, longitude) {
     return -1;
 };
 
-const mergePlacename = function (placename, index) {
+const mergePlacename = function (geoplaces, id, placename, index) {
     let geoplace = geoplaces[index];
 
     if (!geoplace.placename.includes(placename)) {
         geoplace.placename += ", " + placename;
+        geoplace.id += "|" + id;
     }
+};
+
+/*------------------------------------------------------------------------
+ *                      EXPORTED FUNCTIONS
+ */
+const geoplacesForHtml = function (html, keyPrefix) {
+    const geoplaces = [];
+    const links = html.match(/<a[^>]*onclick="showLocation\([^"]*">/g);
+
+    if (links) {
+        links.forEach(link => {
+            const matches = LAT_LON_PARSER.exec(link);
+
+            if (matches) {
+                let id = `${keyPrefix}${matches[INDEX_ID]}`;
+                let placename = matches[INDEX_PLACENAME];
+                let latitude = Number(matches[INDEX_LATITUDE]);
+                let longitude = Number(matches[INDEX_LONGITUDE]);
+                let viewAltitude = Number(matches[INDEX_VIEW_ALTITUDE]);
+                let flag = matches[INDEX_FLAG];
+
+                if (flag !== "") {
+                    placename = `${placename} ${flag}`;
+                }
+
+                addGeoplace(geoplaces, id, placename, latitude, longitude, viewAltitude);
+            }
+        });
+    }
+
+    return geoplaces;
 };
 
 const zoomLevelForViewAltitude = function (altitude) {
@@ -107,68 +110,7 @@ const zoomLevelForViewAltitude = function (altitude) {
     return zoomLevel;
 };
 
-const zoomMapToFitMarkers = function (matches) {
-    if (gmMarkers.length > 0) {
-        if (gmMarkers.length === 1 && matches) {
-            // When there's exactly one marker, add it and zoom to it
-            map.setZoom(zoomLevelForViewAltitude(matches[9]));
-            map.panTo(gmMarkers[0].position);
-        } else {
-            let bounds = new google.maps.LatLngBounds();
-
-            gmMarkers.forEach(function (marker) {
-                bounds.extend(marker.position);
-            });
-
-            map.panTo(bounds.getCenter());
-            map.fitBounds(bounds);
-        }
-    }
-};
-
-/*------------------------------------------------------------------------
- *                      EXPORTED FUNCTIONS
- */
-const setupMarkers = function (div) {
-    if (gmMarkers.length > 0) {
-        clearMarkers();
-    }
-
-    let matches;
-
-    document.querySelectorAll(`#${div.id} a[onclick^=\"showLocation(\"]`).forEach(function (element) {
-        matches = LAT_LON_PARSER.exec(element.getAttribute("onclick"));
-
-        if (matches) {
-            let placename = matches[INDEX_PLACENAME];
-            let latitude = parseFloat(matches[INDEX_LATITUDE]);
-            let longitude = parseFloat(matches[INDEX_LONGITUDE]);
-            let flag = matches[INDEX_FLAG];
-
-            if (flag !== "") {
-                placename = `${placename} ${flag}`;
-            }
-
-            addGeoplace(placename, latitude, longitude);
-        }
-    });
-
-    if (geoplaces.length > 0) {
-        addMarkers();
-    }
-
-    zoomMapToFitMarkers(matches);
-};
-
-const showLocation = function (
-    id, placename, latitude, longitude, viewLatitude, viewLongitude,
-    viewTilt, viewRoll, viewAltitude, viewHeading
-) {
-    map.panTo({ lat: latitude, lng: longitude });
-    map.setZoom(zoomLevelForViewAltitude(viewAltitude));
-};
-
 /*------------------------------------------------------------------------
  *                      EXPORTS
  */
-export { setupMarkers, showLocation };
+export { geoplacesForHtml, zoomLevelForViewAltitude };

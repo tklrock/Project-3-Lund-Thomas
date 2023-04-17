@@ -1,11 +1,5 @@
-import React from "react";
+import Breadcrumbs from "./Breadcrumbs";
 import "./Header.css";
-
-function Breadcrumbs() {
-    return (
-        <div id="crumbs"></div>
-    );
-}
 
 function Title() {
     return (
@@ -25,4 +19,4 @@ function Header() {
     );
 }
 
-export { Header };
+export default Header;
