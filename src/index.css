@@ -5,6 +5,10 @@ body {
         'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: #E5EDF1;
+    color: #222;
+    font-weight: bold;
+    font-size: 10pt;
 }
 
 code {
@@ -12,23 +16,60 @@ code {
         monospace;
 }
 #app {
-    display: grid;
-    grid-template-columns: 30% auto;
-    grid-template-rows: 3.5em auto;
-    grid-template-areas:
-        'header header'
-        'nav-panel map';
+    display: flex;
+    flex-flow: column;
     height: 100vh;
 }
 
 #header {
-    grid-area: header;
+    background-color: #1A2634;
+    color: white;
+    display: flex;
+    flex-direction: row;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16), 0 2px 10px 0 rgba(0,0,0,0.16);
+    align-items: center;
+    z-index: 10000;
+    flex: 0 0 56px;
+}
+
+#centerhead {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    font-weight: normal;
+    text-align: center;
+    flex-direction: column;
+}
+
+div.title {
+    display: block;
+    font-size: larger;
+    font-weight: bolder;
+}
+
+div.subtitle {
+    display: block;
+    font-size: smaller;
+}
+
+#content {
+    display: flex;
+    flex-direction: row;
+    flex: 1 1 auto;
 }
 
 #nav-panel {
-    grid-area: nav-panel;
+    min-width: 220;
+    max-width: 640;
+    flex: 1 6 30%;
+    border-right: 1px solid #aaa;
     position: relative;
-    background-color: antiquewhite;
+}
+
+#map {
+    flex: 3 1 70%;
+    order: 2;
+    z-index: 5;
 }
 
 #nav-contents1,
@@ -36,6 +77,134 @@ code {
     position: absolute;
 }
 
-#map {
-    grid-area: map;
+.volume {
+    padding: .5em;
+    font-size: 12pt;
+}
+
+div.books {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 0 .3em;
+    margin: 0;
+}
+
+div.books a {
+    flex: 0 0 7em;
+    font-weight: bold;
+    margin: .4em;
+    padding-left: .5em;
+    padding-right: .5em;
+    background-color: #fff;
+    color: #222;
+    text-align: center;
+    border-radius: 25px;
+    padding: 5px;
+    text-decoration: none;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+div.books a:hover {
+    background-color: #222;
+    color: #fff;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.4),0 5px 10px 0 rgba(0,0,0,0.2);
+}
+
+div.books a.chapter {
+    flex: 0 0 4em;
+}
+
+.volume h5, .scripnav h5 {
+    font-size: 1.24rem;
+    margin: 0.72rem 0 0.556rem 0;
+}
+
+
+.books li {
+    flex: 0 0 5.4em;
+    align-content: center;
+    list-style: none;
+    height: 24px;
+    min-width: 5em;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    padding: .5em .5em 0 .5em;
+    margin: 0;
+    color: rgb(0, 0, 0);
+    font-size: 11pt;
+    font-weight: normal;
+    text-shadow: 2px 0px 2px rgb(255, 255, 255);
+    background-color: rgb(255, 255, 255);
+    border: solid 5px;
+}
+
+#crumbs {
+    background-color: #4F5D75;
+    color: white;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+    z-index: 10000;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: .75em;
+    padding-right: .75em;
+    font-size: 11pt;
+    position: relative;
+    padding-inline-start: .5em;
+    text-align: start;
+    z-index: 2;
+}
+
+#crumbs a:link, #crumbs a:visited, #crumbs a:active {
+    color: white;
+    text-decoration: none;
+}
+
+#crumbs a:hover {
+    color: #d0d0ff;
+    text-decoration: underline;
+}
+
+#crumbs ul {
+    padding: 0;
+    margin: 0;
+    line-height: 1;
+}
+
+#crumbs li {
+    padding: 0;
+    margin: 0;
+    font-size: 11pt;
+    font-weight: 600;
+    list-style: none;
+    display: inline-block;
+}
+
+#crumbs li:not(:first-child)::before {
+    content: "→";
+    padding: .3em;
+}
+
+
+div.text {
+    padding: 1em;
+    font-weight: normal;
+    font-size: 12pt;
+}
+
+@media screen and (max-width: 640px) {
+    #content {
+        flex-direction: column;
+    }
+
+    #content > #nav-panel, #content > #map {
+        order: 0;
+    }
+
+    #content > #map {
+        min-width: 100%;
+        max-width: 100%;
+    }
 }

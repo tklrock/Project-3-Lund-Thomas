@@ -1,5 +1,4 @@
 
-import './App.css';
 import MainPage from './MainPage';
 import ScripturesData from './ScripturesData';
 import ErrorPage from './ErrorPage';
@@ -16,7 +15,7 @@ function App() {
     const scripturesData = useFetchScripturesData();
     const [markers, setMarkers] = useState([]);
 
-
+    // Routing object to determine what to show in the side bar based on url hash
     const router = useMemo(() => createHashRouter([
         {
             path: "/",

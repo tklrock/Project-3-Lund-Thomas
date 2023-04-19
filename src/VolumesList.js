@@ -1,7 +1,6 @@
-import React, { useContext, useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import ScripturesData from './ScripturesData';
 import VolumeComponent from './VolumeComponent';
-import './VolumesList.css';
 
 export default function VolumesList(props) {
     const { active, setMarkers } = props;

@@ -1,4 +1,3 @@
-import Breadcrumbs from "./Breadcrumbs";
 import "./Header.css";
 
 function Title() {
@@ -13,7 +12,6 @@ function Title() {
 function Header() {
     return (
         <header id="header">
-            <Breadcrumbs />
             <Title />
         </header>
     );

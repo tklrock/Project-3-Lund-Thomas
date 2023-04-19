@@ -1,46 +1,5 @@
-# Getting Started with Create React App
+The main thing that I learned from this project is how to use React routing. Previously, all of my React experience was done in the context of each page showing a different view, and the routing was already set up for me, so I just needed to build the view. I really liked learning about how to set up the router data object and how to specify which components to show. It was useful to see how to structure children components as part of a specific path. I wouldn't have otherwise grasped how to then reference those children components from within the main component returned from the path using "Outlet", even though the reference was a couple of nested components away.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Then, I also learned more about the CSS grid, even though I didn't use it in my final version. I think the exposure to seeing how it worked just helped it sink in. In the end, I switched it to flexbox for more familiar responsive functionality, but I learned about the grid in order to translate it to flexbox correctly.
 
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+Finally, I learned a lot about how to structure a React app overall. This project had enough different functions and features that it could have easily resulted in a very complex structure and a single confusing component. Instead, following your code helped me learn how to structure component hierarchy, where to place state, and how to use tools like routing and transitions to make each component as simple as possible and fit in its place seamlessly. I used the principles I noticed in this project to improve my other React work.

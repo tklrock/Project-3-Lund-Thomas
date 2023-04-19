@@ -1,3 +1,4 @@
+import Breadcrumbs from "./Breadcrumbs";
 import Header from "./Header";
 import Map from "./Map";
 import ScripturesNavigator from "./ScripturesNavigator";
@@ -7,10 +8,13 @@ function MainPage({ markers }) {
     return (
         <div id="app">
             <Header />
-            <ScripturesNavigator />
-            <aside id="map" >
-                <Map markers={markers}/>
-            </aside>
+            <Breadcrumbs />
+            <div id="content">
+                <aside id="map" >
+                    <Map markers={markers}/>
+                </aside>
+                <ScripturesNavigator />
+            </div>
         </div> 
     );
 }

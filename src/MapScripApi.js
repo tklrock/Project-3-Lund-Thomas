@@ -36,36 +36,9 @@ const URL_LINK_PREFIX = "/#/";
 const URL_SCRIPTURES = `${URL_BASE}mapscrip/mapgetscrip.php`;
 const URL_VOLUMES = `${URL_BASE}mapscrip/model/volumes.php`;
 
-
-/*------------------------------------------------------------------------
- *                      VARIABLES
- */
-// let books;
-// let volumes;
-
 /*------------------------------------------------------------------------
  *                      PRIVATE HELPERS
  */
-// const cacheBooks = function (callback) {
-//     volumes.forEach(function (volume) {
-//         let volumeBooks = [];
-//         let bookId = volume.minBookId;
-
-//         while (bookId <= volume.maxBookId) {
-//             volumeBooks.push(books[bookId]);
-//             bookId += 1;
-//         }
-
-//         volume.books = volumeBooks;
-//     });
-
-//     Object.freeze(books);
-//     Object.freeze(volumes);
-
-//     if (typeof callback === "function") {
-//         callback();
-//     }
-// };
 
 const chapterCache = new LRUCache({max: 25 });
 
@@ -85,13 +58,6 @@ const encodedScriptureUrlParameters = function (bookId, chapter, verses, isJst) 
     }
 };
 
-// const getJSON = function (url) {
-//     return fetch(url).then(function (response) {
-//         if (response.ok) {
-//             return response.json();
-//         }
-//     });
-// };
 
 const injectNextPrevious = function (html, nextPrevious) {
     return html.replaceAll(
@@ -197,45 +163,6 @@ const titleForBookChapter = function (book, chapter) {
 /*------------------------------------------------------------------------
 *                      EXPORTED FUNCTIONS
 */
-// const init = function (callback) {
-//     Promise.all([getJSON(URL_VOLUMES), getJSON(URL_BOOKS)])
-//         .then(function (jsonResults) {
-//             const [volumesJson, booksJson] = jsonResults;
-
-//             volumes = volumesJson;
-//             books = booksJson;
-//             cacheBooks(callback);
-//         });
-// };
-
-// const requestChapterText = function (bookId, chapter, success, failure) {
-//     fetch(encodedScriptureUrlParameters(bookId, chapter))
-//         .then(function (response) {
-//             if (response.ok) {
-//                 response.text()
-//                     .then(function (chapterHtml) {
-//                         if (typeof success === "function") {
-//                             success(chapterHtml);
-//                         }
-//                     });
-//             } else {
-//                 if (typeof failure === "function") {
-//                     failure(`Network failure: ${response.statusText}`);
-//                 }
-//             }
-//         })
-//         .catch(function (error) {
-//             if (typeof failure === "function") {
-//                 failure(error);
-//             }
-//         });
-// };
-
-// const volumeForId = function (volumeId) {
-//     if (volumeId !== undefined && volumeId > 0 && volumeId < volumes.length) {
-//         return volumes[volumeId - 1];
-//     }
-// };
 
 function useFetchChapterData(book, chapter) {
     const { books } = useContext(ScripturesData);
